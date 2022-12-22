@@ -1,3 +1,4 @@
+"""Implementation for encryption and decryption functions."""
 from typing import Union
 
 import datetime
@@ -12,10 +13,22 @@ from keycase.crypto import _exceptions
 
 
 def _get_nonce() -> bytes:
+    """Retrieve a 256-bit nonce suitable for AES256-GCM.
+
+    The exact makeup of the nonce shall be considered an implementation
+    detail, but it shall consist of at least 96 bits of randomness and
+    may make use of non-random components to guard against collisions.
+
+        >>> len(_get_nonce())
+        32
+
+    Returns:
+        bytes-like object whose length shall be exactly 32.
+    """
     randomness = secrets.token_bytes(24)
     timestamp = struct.pack('<d', datetime.datetime.utcnow().timestamp())
     res = randomness + timestamp
-    assert (len(res) == 32)
+    assert len(res) == 32
     return res
 
 
@@ -65,6 +78,4 @@ def decrypt(
         )
     except exceptions.InvalidTag as e:
         raise _exceptions.AuthenticationError(
-            'Decryption could not be authenticated.',
-            e,
-        )
+            'Decrypted data could not be authenticated.') from e

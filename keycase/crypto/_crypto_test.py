@@ -1,3 +1,4 @@
+"""Unit tests for _crypto module."""
 import secrets
 
 from absl.testing import absltest

@@ -15,6 +15,8 @@ setuptools.setup(
     install_requires=[
         'cryptography',
         'absl-py',
+        'promise',
+        'protobuf',
     ],
     classifiers=[
         'Programming Language :: Python :: 3',
