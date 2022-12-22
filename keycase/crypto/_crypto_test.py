@@ -7,6 +7,7 @@ from keycase.crypto import _exceptions
 
 
 class TestEncrypt(absltest.TestCase):
+    """Unit tests for encryption and decryption operations."""
 
     def test_roundtrip(self):
         key = secrets.token_bytes(32)
