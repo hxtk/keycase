@@ -19,7 +19,7 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install yapf pytest mypy pylint wheel
+          pip install yapf pytest mypy pylint wheel codecov pytest-cov
           if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
       - name: Lint with pylint
         run: |
@@ -29,7 +29,12 @@ jobs:
           yapf -qr keycase/
       - name: Test with pytest
         run: |
-          pytest keycase
+          pytest --cov=./ keycase
       - name: Test with doctest
         run: |
           find keycase/ -name '*.py' | xargs python -m doctest
+      - name: Upload coverage information
+        env:
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+        run: |
+          codecov
