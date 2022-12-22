@@ -1,20 +1,12 @@
 """Unit tests for _crypto module."""
 import secrets
 
-import Crypto.Cipher
-from Crypto.Cipher import _mode_gcm
 from absl.testing import absltest
 
 from keycase.crypto import _crypto
 from keycase.crypto import _cryptodome
 
 from keycase.crypto import _exceptions
-
-
-def _get_cipher(key: bytes, nonce: bytes) -> _mode_gcm.GcmMode:
-    cipher = Crypto.Cipher.AES.new(key, Crypto.Cipher.AES.MODE_GCM, nonce)
-    assert isinstance(cipher, _mode_gcm.GcmMode)
-    return cipher
 
 
 class TestEncrypt(absltest.TestCase):
