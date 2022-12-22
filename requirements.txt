@@ -5,6 +5,7 @@ attrs==22.2.0
 cached-property==1.5.2
 cffi==1.15.1
 cfgv==3.3.1
+coverage==7.0.0
 cryptography==38.0.4
 dill==0.3.6
 distlib==0.3.6
@@ -33,10 +34,12 @@ pre-commit==2.20.0
 promise==2.3
 protobuf==4.21.12
 pycparser==2.21
+pycryptodome==3.16.0
 pydot==1.4.2
 pylint==2.15.9
 pyparsing==3.0.9
 pytest==7.2.0
+pytest-cov==4.0.0
 python-pkcs11==0.7.0
 pytype==2022.12.15
 PyYAML==6.0
