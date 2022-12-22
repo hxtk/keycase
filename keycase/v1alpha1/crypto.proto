@@ -1,0 +1,7 @@
+syntax = "proto3";
+
+message CipherText {
+  bytes nonce = 1;
+  bytes ciphertext = 2;
+  bytes authn_tag = 3;
+}
