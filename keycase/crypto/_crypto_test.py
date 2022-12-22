@@ -31,6 +31,12 @@ class TestEncrypt(absltest.TestCase):
         with self.assertRaises(ValueError):
             _crypto.encrypt(b'foo', 'bar', key)
 
+    def test_string_plaintext(self):
+        key = secrets.token_bytes(32)
+        ct = _crypto.encrypt('foo', b'bar', key)
+        got = _crypto.decrypt(ct, 'bar', key)
+        assert bytes.decode(got) == 'foo'
+
     def test_bad_decrypt_key(self):
         key = secrets.token_bytes(32)
         ct = _crypto.encrypt(b'foo', 'bar', key)
