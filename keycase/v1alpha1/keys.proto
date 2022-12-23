@@ -1,0 +1,83 @@
+syntax = "proto3";
+
+import "google/protobuf/timestamp.proto";
+
+// A key that can be decrypted by the identified PKCS#11 resource.
+message Pkcs11EncryptedKey {
+  bytes ciphertext = 2;
+  string pkcs11_uri = 3;
+}
+
+// A literal piece of encrypted data and the list of keys that may decrypt it.
+message Payload {
+  // KeyNames lists the canonical names of keys which may decrypt this key.
+  repeated string key_names = 1;
+
+  // Ciphertext is the literal ciphertext of the secret.
+  bytes ciphertext = 2;
+}
+
+// A password-derived key salted with some measured property of the host
+// machine.
+message MachineKey {
+  message Command {
+    // The binary to be executed.
+    string command = 1;
+
+    // Arguments to be passed to the binary.
+    repeated string argv = 2;
+  }
+
+  oneof kind {
+    // The  largest available hash for the specified Platform Control Register
+    // shall be used as the key derivation salt.
+    int32 tpm_pcr = 1;
+
+    // The SHA256 sum of the file at the specified path shall be used as the
+    // key derivation salt.
+    string file_path = 2;
+
+    // The SHA256 sum of the given command's standard output stream shall be
+    // used as the key derivation salt.
+    Command command = 3;
+  }
+}
+
+message Key {
+  string name = 1;
+  oneof kind {
+    // A salt for password-based key derivation embedded in the vault file.
+    bytes embedded_salt = 2;
+
+    // A salt for password-based key derivation derived from the host machine.
+    MachineKey machine_salt = 3;
+
+    // A key that is encrypted
+    Pkcs11EncryptedKey pkcs11_key = 5;
+
+    // A key that is encrypted with some other key. Secrets shall be encrypted
+    // with this key type.
+    Payload key_encrypted = 4;
+  }
+
+  google.protobuf.Timestamp create_time = 6;
+}
+
+// Secret represents a TOTP Secret.
+message Secret {
+  // Name is the unique canonical identifier of this Secret.
+  string name = 1;
+
+  // DisplayName is the human-readable name of this Secret.
+  string display_name = 2;
+
+  // Description is a human-readable long-form description of this Secret.
+  string description = 3;
+
+  repeated Payload data = 4;
+}
+
+message Vault {
+  repeated Key keys = 2;
+  repeated Secret secrets = 3;
+}
