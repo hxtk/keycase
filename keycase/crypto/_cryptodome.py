@@ -18,8 +18,6 @@ def encrypt(
     associated_data: Union[str, bytes],
     key: _key.Key,
 ) -> bytes:
-    if len(key.key_bytes()) != 32:
-        raise ValueError('256-bit key length is required.')
     if isinstance(plaintext, str):
         plaintext = plaintext.encode(encoding='utf-8')
     if isinstance(associated_data, str):
@@ -43,8 +41,6 @@ def decrypt(
     associated_data: Union[str, bytes],
     key: _key.Key,
 ) -> bytes:
-    if len(key.key_bytes()) != 32:
-        raise ValueError('256-bit key length is required.')
     if isinstance(associated_data, str):
         associated_data = associated_data.encode(encoding='utf-8')
 
