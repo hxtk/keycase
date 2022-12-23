@@ -37,6 +37,29 @@ def encrypt(
     associated_data: Union[str, bytes],
     key: _key.Key,
 ) -> bytes:
+    """Encrypt the given plaintext with key and associated_data.
+
+    Uses AES-256-GCM encryption with a securely-chosen nonce consisting
+    of both random and non-random components. This function claims to choose
+    a safe set of parameters for AES-256-GCM, however, the security guarantees
+    provided by this module cannot exceed the theoretical limitations of
+    AES-256-GCM regarding properties such as the maximum number of encrypted
+    bytes, messages, etc.
+
+    Args:
+        plaintext: a `bytes` or UTF-8-encodable `str` object to be encrypted.
+        associated_data: some non-secret data that will be required for
+            decryption.
+        key: A cryptographic key object.
+
+    Returns:
+        a bytes object which may be passed into `decrypt` as a ciphertext.
+        This bytes object is guaranteed to securely guard the value of
+        `plaintext`, but permit an attacker to trivially recover the nonce
+        used.
+
+        For details on the wire format, see `keycase.v1alpha1.crypto_pb2`.
+    """
     kb = key.key_bytes()
 
     if isinstance(plaintext, str):
@@ -60,6 +83,25 @@ def decrypt(
     associated_data: Union[str, bytes],
     key: _key.Key,
 ) -> bytes:
+    """Decrypt a cyphertext with associated data.
+
+    Args:
+        ciphertext: a bytestream in the wire format produced by `encrypt`.
+            See `keycase.v1alpha1.crypto.CipherText` for details.
+        associated_data: a bytes or UTF-8-encodable str object encoding the
+            same associated data with which the plaintext was originally
+            encrypted.
+        key: a cryptographic key object whose `key_bytes` member is identical
+            to the one originally passed to `encrypt`.
+
+    Returns:
+        a bytes object equivalent to the original plaintext passed into
+        `encrypt`.
+
+    Raises:
+        keycase.crypto.AuthenticationError: if the key or associated data
+            do not match those passed into `encrypt`.
+    """
     kb = key.key_bytes()
 
     if isinstance(associated_data, str):

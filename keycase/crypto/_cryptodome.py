@@ -1,4 +1,10 @@
-"""Implementation for encryption and decryption functions."""
+"""Implementation for encryption and decryption functions.
+
+This implementation is essentially unused (it is not publicly exported
+by the parent module) and exists as a parallel implementation for the express
+purpose of sanity-checking the main implementation in `keycase.crypto._crypto`:
+the two implementations are intended to be functionally interchangeable.
+"""
 from typing import Union
 
 from Crypto.Cipher import _mode_gcm, AES
