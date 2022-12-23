@@ -3,12 +3,12 @@ from typing import Union
 
 from Crypto.Cipher import _mode_gcm, AES
 
-from keycase.crypto import _crypto, _exceptions
+from keycase.crypto import _crypto, _exceptions, _key
 from keycase.v1alpha1 import crypto_pb2
 
 
-def _get_cipher(key: bytes, nonce: bytes) -> _mode_gcm.GcmMode:
-    cipher = AES.new(key, AES.MODE_GCM, nonce)
+def _get_cipher(key: _key.Key, nonce: bytes) -> _mode_gcm.GcmMode:
+    cipher = AES.new(key.key_bytes(), AES.MODE_GCM, nonce)
     assert isinstance(cipher, _mode_gcm.GcmMode)
     return cipher
 
@@ -16,9 +16,9 @@ def _get_cipher(key: bytes, nonce: bytes) -> _mode_gcm.GcmMode:
 def encrypt(
     plaintext: Union[str, bytes],
     associated_data: Union[str, bytes],
-    key: bytes,
+    key: _key.Key,
 ) -> bytes:
-    if len(key) != 32:
+    if len(key.key_bytes()) != 32:
         raise ValueError('256-bit key length is required.')
     if isinstance(plaintext, str):
         plaintext = plaintext.encode(encoding='utf-8')
@@ -41,9 +41,9 @@ def encrypt(
 def decrypt(
     ciphertext: bytes,
     associated_data: Union[str, bytes],
-    key: bytes,
+    key: _key.Key,
 ) -> bytes:
-    if len(key) != 32:
+    if len(key.key_bytes()) != 32:
         raise ValueError('256-bit key length is required.')
     if isinstance(associated_data, str):
         associated_data = associated_data.encode(encoding='utf-8')

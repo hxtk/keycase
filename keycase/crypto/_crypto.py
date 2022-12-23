@@ -9,7 +9,7 @@ from cryptography.hazmat.primitives.ciphers import aead as _aead
 from cryptography import exceptions
 
 from keycase.v1alpha1 import crypto_pb2
-from keycase.crypto import _exceptions
+from keycase.crypto import _exceptions, _key
 
 
 def _get_nonce() -> bytes:
@@ -35,16 +35,18 @@ def _get_nonce() -> bytes:
 def encrypt(
     plaintext: Union[str, bytes],
     associated_data: Union[str, bytes],
-    key: bytes,
+    key: _key.Key,
 ) -> bytes:
-    if len(key) != 32:
+    kb = key.key_bytes()
+
+    if len(kb) != 32:
         raise ValueError('256-bit key length is required.')
     if isinstance(plaintext, str):
         plaintext = plaintext.encode(encoding='utf-8')
     if isinstance(associated_data, str):
         associated_data = associated_data.encode(encoding='utf-8')
 
-    cipher = _aead.AESGCM(key)
+    cipher = _aead.AESGCM(kb)
     nonce = _get_nonce()
 
     ct = cipher.encrypt(nonce, plaintext, associated_data)
@@ -58,9 +60,11 @@ def encrypt(
 def decrypt(
     ciphertext: bytes,
     associated_data: Union[str, bytes],
-    key: bytes,
+    key: _key.Key,
 ) -> bytes:
-    if len(key) != 32:
+    kb = key.key_bytes()
+
+    if len(kb) != 32:
         raise ValueError('256-bit key length is required.')
     if isinstance(associated_data, str):
         associated_data = associated_data.encode(encoding='utf-8')
@@ -68,7 +72,7 @@ def decrypt(
     ct = crypto_pb2.CipherText()
     ct.ParseFromString(ciphertext)
 
-    cipher = _aead.AESGCM(key)
+    cipher = _aead.AESGCM(kb)
 
     try:
         return cipher.decrypt(

@@ -16,15 +16,24 @@ Typical usage example:
     b'foo'
 """
 
-import secrets as _secrets
-from keycase.crypto import _crypto, _exceptions
+from keycase.crypto import _crypto, _exceptions, _key
 
-
-def get_key() -> bytes:
-    """Get a random key suitable for use with encrypt and decrypt."""
-    return _secrets.token_bytes(32)
-
-
+# Explicitly re-export desired names.
 encrypt = _crypto.encrypt
 decrypt = _crypto.decrypt
+
+#rsa_key = _key.rsa_key
+random_key = _key.random_key
+password_key = _key.password_key
+
 AuthenticationError = _exceptions.AuthenticationError
+Key = _key.Key
+
+__all__ = [
+    'encrypt',
+    'decrypt',
+    'password_key',
+    'random_key',
+    'AuthenticationError',
+    'Key',
+]
