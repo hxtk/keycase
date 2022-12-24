@@ -1,6 +1,6 @@
 """Build in-memory representation of a Vault."""
 import io
-from typing import Callable, Mapping
+from typing import Callable, Mapping, Union
 import yaml
 
 from google.protobuf import json_format
@@ -94,7 +94,7 @@ class EncryptedKey(object):
     def __init__(
         self,
         ciphertext: bytes,
-        associated_data: str | bytes,
+        associated_data: Union[str, bytes],
         key: crypto.Key,
     ):
         self.ciphertext = ciphertext
