@@ -3,7 +3,10 @@ import secrets
 
 from absl.testing import absltest
 
-from keycase.crypto import _crypto, _cryptodome, _exceptions, _key
+from keycase.crypto import _crypto
+from keycase.crypto import _cryptodome
+from keycase.crypto import _exceptions
+from keycase.crypto import _key
 
 
 class TestEncrypt(absltest.TestCase):

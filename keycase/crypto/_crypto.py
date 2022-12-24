@@ -1,35 +1,13 @@
 """Implementation for encryption and decryption functions."""
 from typing import Union
 
-import datetime
-import secrets
-import struct
-
 from cryptography.hazmat.primitives.ciphers import aead as _aead
-from cryptography import exceptions
+import cryptography.exceptions
 
 from keycase.v1alpha1 import crypto_pb2
-from keycase.crypto import _exceptions, _key
-
-
-def _get_nonce() -> bytes:
-    """Retrieve a 256-bit nonce suitable for AES256-GCM.
-
-    The exact makeup of the nonce shall be considered an implementation
-    detail, but it shall consist of at least 96 bits of randomness and
-    may make use of non-random components to guard against collisions.
-
-        >>> len(_get_nonce())
-        32
-
-    Returns:
-        bytes-like object whose length shall be exactly 32.
-    """
-    randomness = secrets.token_bytes(24)
-    timestamp = struct.pack('<d', datetime.datetime.utcnow().timestamp())
-    res = randomness + timestamp
-    assert len(res) == 32
-    return res
+from keycase.crypto import _exceptions
+from keycase.crypto import _key
+from keycase.crypto import _nonce
 
 
 def encrypt(
@@ -68,7 +46,7 @@ def encrypt(
         associated_data = associated_data.encode(encoding='utf-8')
 
     cipher = _aead.AESGCM(kb)
-    nonce = _get_nonce()
+    nonce = _nonce.get_nonce()
 
     ct = cipher.encrypt(nonce, plaintext, associated_data)
     return crypto_pb2.CipherText(
@@ -118,6 +96,6 @@ def decrypt(
             ct.ciphertext + ct.authn_tag,
             associated_data,
         )
-    except exceptions.InvalidTag as e:
+    except cryptography.exceptions.InvalidTag as e:
         raise _exceptions.AuthenticationError(
             'Decrypted data could not be authenticated.') from e

@@ -36,7 +36,7 @@ class RawKey(object):
         return self.key
 
 
-def random_key() -> 'Key':
+def random_key() -> 'RawKey':
     """Get a secure random key suitable for cryptographic usage."""
     return RawKey(secrets.token_bytes(32))
 
@@ -45,7 +45,7 @@ def password_key(
     secret: Union[str, bytes],
     salt: bytes,
     strict: bool = True,
-) -> 'Key':
+) -> 'RawKey':
     """Generate a secure password-derived key.
 
     Args:

@@ -7,9 +7,12 @@ the two implementations are intended to be functionally interchangeable.
 """
 from typing import Union
 
-from Crypto.Cipher import _mode_gcm, AES
+from Crypto.Cipher import AES
+from Crypto.Cipher import _mode_gcm  # pylint: disable=protected-access
 
-from keycase.crypto import _crypto, _exceptions, _key
+from keycase.crypto import _exceptions
+from keycase.crypto import _key
+from keycase.crypto import _nonce
 from keycase.v1alpha1 import crypto_pb2
 
 
@@ -29,7 +32,7 @@ def encrypt(
     if isinstance(associated_data, str):
         associated_data = associated_data.encode(encoding='utf-8')
 
-    nonce = _crypto._get_nonce()  # pylint: disable=protected-access
+    nonce = _nonce.get_nonce()  # pylint: disable=protected-access
     cipher = _get_cipher(key, nonce)
 
     cipher.update(associated_data)
