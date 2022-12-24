@@ -1,6 +1,6 @@
 """Build in-memory representation of a Vault."""
 import io
-from typing import Callable, Mapping, Union
+from typing import Callable, Mapping, TextIO, Union
 import yaml
 
 from google.protobuf import json_format
@@ -35,12 +35,19 @@ class Vault(object):
         return cls(secrets, master_keys, user_keys)
 
     @classmethod
-    def from_yaml(cls, stream: io.StringIO) -> 'Vault':
+    def from_yaml(cls, stream: TextIO) -> 'Vault':
         obj = yaml.safe_load(stream)
 
         vault = keys_pb2.Vault()
         json_format.ParseDict(obj, vault)
         return cls.from_proto(vault)
+
+    def dump_proto(self) -> keys_pb2.Vault:
+        return keys_pb2.Vault(
+            user_keys=self.user_keys.values(),
+            master_keys=self.master_keys.values(),
+            secrets=self.secrets.values(),
+        )
 
     def dump_string(self) -> str:
         buffer = io.StringIO()
@@ -48,11 +55,7 @@ class Vault(object):
         return buffer.read()
 
     def dump_stream(self, stream: io.StringIO) -> None:
-        vault = keys_pb2.Vault(
-            user_keys=self.user_keys.values(),
-            master_keys=self.master_keys.values(),
-            secrets=self.secrets.values(),
-        )
+        vault = self.dump_proto()
         yaml.dump(json_format.MessageToDict(vault), stream)
 
     def _internal_get_token(
@@ -113,22 +116,24 @@ class UserKey(object):
         self.password = password
 
     def key_bytes(self):
-        if self.user_key.HasField('embedded_salt'):
+        kind = self.user_key.WhichOneof('kind')
+        if kind == 'embedded_salt':
             return crypto.password_key(
                 self.password,
                 self.user_key.embedded_salt.salt,
             ).key_bytes()
-        if self.user_key.HasField('machine_salt'):
-            if self.user_key.machine_salt.HasField('tpm_pcr'):
+        if kind == 'machine_salt':
+            key = self.user_key.machine_salt
+            kind = key.WhichOneof('kind')
+            if kind == 'tpm_pcr':
                 return crypto.password_key(
                     secret=self.password,
-                    salt=machine.read_pcr(self.user_key.machine_salt.tpm_pcr),
+                    salt=machine.read_pcr(key.tpm_pcr),
                 ).key_bytes()
-            if self.user_key.machine_salt.HasField('file_path'):
+            if kind == 'file_path':
                 return crypto.password_key(
                     secret=self.password,
-                    salt=machine.file_hash(
-                        self.user_key.machine_salt.file_path),
+                    salt=machine.file_hash(key.file_path),
                 ).key_bytes()
         raise NotImplementedError('That key type has not been implemented.')
 
