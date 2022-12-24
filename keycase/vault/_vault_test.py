@@ -1,4 +1,5 @@
 """Unit tests for Vault module."""
+import os
 import secrets
 
 from absl.testing import absltest
@@ -23,11 +24,23 @@ class TestEncryptedKey(absltest.TestCase):
 class TestUserKey(absltest.TestCase):
     """Unit tests for the _vault.UserKey class."""
 
-    def test_machine_key_key_bytes(self):
+    @absltest.skipUnless(os.path.exists('/sys/class/tpm/tpm0'),
+                         'Requires a TPM.')
+    def test_machine_key_pcr_key_bytes(self):
         uk = _vault.UserKey(
             keys_pb2.UserKey(
                 name='foo',
                 machine_salt=keys_pb2.MachineKey(tpm_pcr=0),
+            ),
+            'password',
+        )
+        self.assertLen(uk.key_bytes(), 32)
+
+    def test_machine_key_file_key_bytes(self):
+        uk = _vault.UserKey(
+            keys_pb2.UserKey(
+                name='foo',
+                machine_salt=keys_pb2.MachineKey(file_path='/etc/machine-id'),
             ),
             'password',
         )
