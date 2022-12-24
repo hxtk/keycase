@@ -119,10 +119,17 @@ class UserKey(object):
                 self.user_key.embedded_salt.salt,
             ).key_bytes()
         if self.user_key.HasField('machine_salt'):
-            return crypto.password_key(
-                secret=self.password,
-                salt=machine.read_pcr(self.user_key.machine_salt.tpm_pcr),
-            ).key_bytes()
+            if self.user_key.machine_salt.HasField('tpm_pcr'):
+                return crypto.password_key(
+                    secret=self.password,
+                    salt=machine.read_pcr(self.user_key.machine_salt.tpm_pcr),
+                ).key_bytes()
+            if self.user_key.machine_salt.HasField('file_path'):
+                return crypto.password_key(
+                    secret=self.password,
+                    salt=machine.file_hash(
+                        self.user_key.machine_salt.file_path),
+                ).key_bytes()
         raise NotImplementedError('That key type has not been implemented.')
 
 
