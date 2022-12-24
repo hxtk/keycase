@@ -14,7 +14,7 @@ _sym_db = _symbol_database.Default()
 from google.protobuf import timestamp_pb2 as google_dot_protobuf_dot_timestamp__pb2
 
 
-DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\nkeys.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"<\n\x12Pkcs11EncryptedKey\x12\x12\n\nciphertext\x18\x02 \x01(\x0c\x12\x12\n\npkcs11_uri\x18\x03 \x01(\t\"0\n\x07Payload\x12\x11\n\tkey_names\x18\x01 \x03(\t\x12\x12\n\nciphertext\x18\x02 \x01(\x0c\"\x8e\x01\n\nMachineKey\x12\x11\n\x07tpm_pcr\x18\x01 \x01(\x05H\x00\x12\x13\n\tfile_path\x18\x02 \x01(\tH\x00\x12&\n\x07\x63ommand\x18\x03 \x01(\x0b\x32\x13.MachineKey.CommandH\x00\x1a(\n\x07\x43ommand\x12\x0f\n\x07\x63ommand\x18\x01 \x01(\t\x12\x0c\n\x04\x61rgv\x18\x02 \x03(\tB\x06\n\x04kind\"\xd8\x01\n\x03Key\x12\x0c\n\x04name\x18\x01 \x01(\t\x12\x17\n\rembedded_salt\x18\x02 \x01(\x0cH\x00\x12#\n\x0cmachine_salt\x18\x03 \x01(\x0b\x32\x0b.MachineKeyH\x00\x12)\n\npkcs11_key\x18\x05 \x01(\x0b\x32\x13.Pkcs11EncryptedKeyH\x00\x12!\n\rkey_encrypted\x18\x04 \x01(\x0b\x32\x08.PayloadH\x00\x12/\n\x0b\x63reate_time\x18\x06 \x01(\x0b\x32\x1a.google.protobuf.TimestampB\x06\n\x04kind\"Y\n\x06Secret\x12\x0c\n\x04name\x18\x01 \x01(\t\x12\x14\n\x0c\x64isplay_name\x18\x02 \x01(\t\x12\x13\n\x0b\x64\x65scription\x18\x03 \x01(\t\x12\x16\n\x04\x64\x61ta\x18\x04 \x03(\x0b\x32\x08.Payload\"5\n\x05Vault\x12\x12\n\x04keys\x18\x02 \x03(\x0b\x32\x04.Key\x12\x18\n\x07secrets\x18\x03 \x03(\x0b\x32\x07.Secretb\x06proto3')
+DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\nkeys.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"P\n\x12Pkcs11EncryptedKey\x12\x12\n\nciphertext\x18\x02 \x01(\x0c\x12\x12\n\npkcs11_uri\x18\x03 \x01(\t\x12\x12\n\npublic_key\x18\x04 \x01(\x0c\"/\n\x07Payload\x12\x10\n\x08key_name\x18\x01 \x01(\t\x12\x12\n\nciphertext\x18\x02 \x01(\x0c\"\x8e\x01\n\nMachineKey\x12\x11\n\x07tpm_pcr\x18\x01 \x01(\x05H\x00\x12\x13\n\tfile_path\x18\x02 \x01(\tH\x00\x12&\n\x07\x63ommand\x18\x03 \x01(\x0b\x32\x13.MachineKey.CommandH\x00\x1a(\n\x07\x43ommand\x12\x0f\n\x07\x63ommand\x18\x01 \x01(\t\x12\x0c\n\x04\x61rgv\x18\x02 \x03(\tB\x06\n\x04kind\"\x17\n\x07SaltKey\x12\x0c\n\x04salt\x18\x01 \x01(\x0c\"\xc3\x01\n\x07UserKey\x12\x0c\n\x04name\x18\x01 \x01(\t\x12!\n\rembedded_salt\x18\x02 \x01(\x0b\x32\x08.SaltKeyH\x00\x12#\n\x0cmachine_salt\x18\x03 \x01(\x0b\x32\x0b.MachineKeyH\x00\x12)\n\npkcs11_key\x18\x04 \x01(\x0b\x32\x13.Pkcs11EncryptedKeyH\x00\x12/\n\x0b\x63reate_time\x18\x05 \x01(\x0b\x32\x1a.google.protobuf.TimestampB\x06\n\x04kind\"1\n\tMasterKey\x12\x0c\n\x04name\x18\x01 \x01(\t\x12\x16\n\x04keys\x18\x02 \x03(\x0b\x32\x08.Payload\"]\n\x06Secret\x12\x0c\n\x04name\x18\x01 \x01(\t\x12\x14\n\x0c\x64isplay_name\x18\x02 \x01(\t\x12\x13\n\x0b\x64\x65scription\x18\x03 \x01(\t\x12\x1a\n\x08payloads\x18\x04 \x03(\x0b\x32\x08.Payload\"_\n\x05Vault\x12\x1b\n\tuser_keys\x18\x02 \x03(\x0b\x32\x08.UserKey\x12\x1f\n\x0bmaster_keys\x18\x03 \x03(\x0b\x32\n.MasterKey\x12\x18\n\x07secrets\x18\x04 \x03(\x0b\x32\x07.Secretb\x06proto3')
 
 _builder.BuildMessageAndEnumDescriptors(DESCRIPTOR, globals())
 _builder.BuildTopDescriptorsAndMessages(DESCRIPTOR, 'keys_pb2', globals())
@@ -22,17 +22,21 @@ if _descriptor._USE_C_DESCRIPTORS == False:
 
   DESCRIPTOR._options = None
   _PKCS11ENCRYPTEDKEY._serialized_start=47
-  _PKCS11ENCRYPTEDKEY._serialized_end=107
-  _PAYLOAD._serialized_start=109
-  _PAYLOAD._serialized_end=157
-  _MACHINEKEY._serialized_start=160
-  _MACHINEKEY._serialized_end=302
-  _MACHINEKEY_COMMAND._serialized_start=254
-  _MACHINEKEY_COMMAND._serialized_end=294
-  _KEY._serialized_start=305
-  _KEY._serialized_end=521
-  _SECRET._serialized_start=523
-  _SECRET._serialized_end=612
-  _VAULT._serialized_start=614
-  _VAULT._serialized_end=667
+  _PKCS11ENCRYPTEDKEY._serialized_end=127
+  _PAYLOAD._serialized_start=129
+  _PAYLOAD._serialized_end=176
+  _MACHINEKEY._serialized_start=179
+  _MACHINEKEY._serialized_end=321
+  _MACHINEKEY_COMMAND._serialized_start=273
+  _MACHINEKEY_COMMAND._serialized_end=313
+  _SALTKEY._serialized_start=323
+  _SALTKEY._serialized_end=346
+  _USERKEY._serialized_start=349
+  _USERKEY._serialized_end=544
+  _MASTERKEY._serialized_start=546
+  _MASTERKEY._serialized_end=595
+  _SECRET._serialized_start=597
+  _SECRET._serialized_end=690
+  _VAULT._serialized_start=692
+  _VAULT._serialized_end=787
 # @@protoc_insertion_point(module_scope)

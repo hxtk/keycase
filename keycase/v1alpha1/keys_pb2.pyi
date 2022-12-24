@@ -6,22 +6,6 @@ from typing import ClassVar as _ClassVar, Iterable as _Iterable, Mapping as _Map
 
 DESCRIPTOR: _descriptor.FileDescriptor
 
-class Key(_message.Message):
-    __slots__ = ["create_time", "embedded_salt", "key_encrypted", "machine_salt", "name", "pkcs11_key"]
-    CREATE_TIME_FIELD_NUMBER: _ClassVar[int]
-    EMBEDDED_SALT_FIELD_NUMBER: _ClassVar[int]
-    KEY_ENCRYPTED_FIELD_NUMBER: _ClassVar[int]
-    MACHINE_SALT_FIELD_NUMBER: _ClassVar[int]
-    NAME_FIELD_NUMBER: _ClassVar[int]
-    PKCS11_KEY_FIELD_NUMBER: _ClassVar[int]
-    create_time: _timestamp_pb2.Timestamp
-    embedded_salt: bytes
-    key_encrypted: Payload
-    machine_salt: MachineKey
-    name: str
-    pkcs11_key: Pkcs11EncryptedKey
-    def __init__(self, name: _Optional[str] = ..., embedded_salt: _Optional[bytes] = ..., machine_salt: _Optional[_Union[MachineKey, _Mapping]] = ..., pkcs11_key: _Optional[_Union[Pkcs11EncryptedKey, _Mapping]] = ..., key_encrypted: _Optional[_Union[Payload, _Mapping]] = ..., create_time: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ...) -> None: ...
-
 class MachineKey(_message.Message):
     __slots__ = ["command", "file_path", "tpm_pcr"]
     class Command(_message.Message):
@@ -39,38 +23,70 @@ class MachineKey(_message.Message):
     tpm_pcr: int
     def __init__(self, tpm_pcr: _Optional[int] = ..., file_path: _Optional[str] = ..., command: _Optional[_Union[MachineKey.Command, _Mapping]] = ...) -> None: ...
 
+class MasterKey(_message.Message):
+    __slots__ = ["keys", "name"]
+    KEYS_FIELD_NUMBER: _ClassVar[int]
+    NAME_FIELD_NUMBER: _ClassVar[int]
+    keys: _containers.RepeatedCompositeFieldContainer[Payload]
+    name: str
+    def __init__(self, name: _Optional[str] = ..., keys: _Optional[_Iterable[_Union[Payload, _Mapping]]] = ...) -> None: ...
+
 class Payload(_message.Message):
-    __slots__ = ["ciphertext", "key_names"]
+    __slots__ = ["ciphertext", "key_name"]
     CIPHERTEXT_FIELD_NUMBER: _ClassVar[int]
-    KEY_NAMES_FIELD_NUMBER: _ClassVar[int]
+    KEY_NAME_FIELD_NUMBER: _ClassVar[int]
     ciphertext: bytes
-    key_names: _containers.RepeatedScalarFieldContainer[str]
-    def __init__(self, key_names: _Optional[_Iterable[str]] = ..., ciphertext: _Optional[bytes] = ...) -> None: ...
+    key_name: str
+    def __init__(self, key_name: _Optional[str] = ..., ciphertext: _Optional[bytes] = ...) -> None: ...
 
 class Pkcs11EncryptedKey(_message.Message):
-    __slots__ = ["ciphertext", "pkcs11_uri"]
+    __slots__ = ["ciphertext", "pkcs11_uri", "public_key"]
     CIPHERTEXT_FIELD_NUMBER: _ClassVar[int]
     PKCS11_URI_FIELD_NUMBER: _ClassVar[int]
+    PUBLIC_KEY_FIELD_NUMBER: _ClassVar[int]
     ciphertext: bytes
     pkcs11_uri: str
-    def __init__(self, ciphertext: _Optional[bytes] = ..., pkcs11_uri: _Optional[str] = ...) -> None: ...
+    public_key: bytes
+    def __init__(self, ciphertext: _Optional[bytes] = ..., pkcs11_uri: _Optional[str] = ..., public_key: _Optional[bytes] = ...) -> None: ...
+
+class SaltKey(_message.Message):
+    __slots__ = ["salt"]
+    SALT_FIELD_NUMBER: _ClassVar[int]
+    salt: bytes
+    def __init__(self, salt: _Optional[bytes] = ...) -> None: ...
 
 class Secret(_message.Message):
-    __slots__ = ["data", "description", "display_name", "name"]
-    DATA_FIELD_NUMBER: _ClassVar[int]
+    __slots__ = ["description", "display_name", "name", "payloads"]
     DESCRIPTION_FIELD_NUMBER: _ClassVar[int]
     DISPLAY_NAME_FIELD_NUMBER: _ClassVar[int]
     NAME_FIELD_NUMBER: _ClassVar[int]
-    data: _containers.RepeatedCompositeFieldContainer[Payload]
+    PAYLOADS_FIELD_NUMBER: _ClassVar[int]
     description: str
     display_name: str
     name: str
-    def __init__(self, name: _Optional[str] = ..., display_name: _Optional[str] = ..., description: _Optional[str] = ..., data: _Optional[_Iterable[_Union[Payload, _Mapping]]] = ...) -> None: ...
+    payloads: _containers.RepeatedCompositeFieldContainer[Payload]
+    def __init__(self, name: _Optional[str] = ..., display_name: _Optional[str] = ..., description: _Optional[str] = ..., payloads: _Optional[_Iterable[_Union[Payload, _Mapping]]] = ...) -> None: ...
+
+class UserKey(_message.Message):
+    __slots__ = ["create_time", "embedded_salt", "machine_salt", "name", "pkcs11_key"]
+    CREATE_TIME_FIELD_NUMBER: _ClassVar[int]
+    EMBEDDED_SALT_FIELD_NUMBER: _ClassVar[int]
+    MACHINE_SALT_FIELD_NUMBER: _ClassVar[int]
+    NAME_FIELD_NUMBER: _ClassVar[int]
+    PKCS11_KEY_FIELD_NUMBER: _ClassVar[int]
+    create_time: _timestamp_pb2.Timestamp
+    embedded_salt: SaltKey
+    machine_salt: MachineKey
+    name: str
+    pkcs11_key: Pkcs11EncryptedKey
+    def __init__(self, name: _Optional[str] = ..., embedded_salt: _Optional[_Union[SaltKey, _Mapping]] = ..., machine_salt: _Optional[_Union[MachineKey, _Mapping]] = ..., pkcs11_key: _Optional[_Union[Pkcs11EncryptedKey, _Mapping]] = ..., create_time: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ...) -> None: ...
 
 class Vault(_message.Message):
-    __slots__ = ["keys", "secrets"]
-    KEYS_FIELD_NUMBER: _ClassVar[int]
+    __slots__ = ["master_keys", "secrets", "user_keys"]
+    MASTER_KEYS_FIELD_NUMBER: _ClassVar[int]
     SECRETS_FIELD_NUMBER: _ClassVar[int]
-    keys: _containers.RepeatedCompositeFieldContainer[Key]
+    USER_KEYS_FIELD_NUMBER: _ClassVar[int]
+    master_keys: _containers.RepeatedCompositeFieldContainer[MasterKey]
     secrets: _containers.RepeatedCompositeFieldContainer[Secret]
-    def __init__(self, keys: _Optional[_Iterable[_Union[Key, _Mapping]]] = ..., secrets: _Optional[_Iterable[_Union[Secret, _Mapping]]] = ...) -> None: ...
+    user_keys: _containers.RepeatedCompositeFieldContainer[UserKey]
+    def __init__(self, user_keys: _Optional[_Iterable[_Union[UserKey, _Mapping]]] = ..., master_keys: _Optional[_Iterable[_Union[MasterKey, _Mapping]]] = ..., secrets: _Optional[_Iterable[_Union[Secret, _Mapping]]] = ...) -> None: ...

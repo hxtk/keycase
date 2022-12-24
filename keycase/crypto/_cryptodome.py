@@ -32,7 +32,7 @@ def encrypt(
     if isinstance(associated_data, str):
         associated_data = associated_data.encode(encoding='utf-8')
 
-    nonce = _nonce.get_nonce()  # pylint: disable=protected-access
+    nonce = _nonce.get_nonce()
     cipher = _get_cipher(key, nonce)
 
     cipher.update(associated_data)

@@ -22,7 +22,6 @@ from keycase.crypto import _crypto, _exceptions, _key
 encrypt = _crypto.encrypt
 decrypt = _crypto.decrypt
 
-#rsa_key = _key.rsa_key
 random_key = _key.random_key
 password_key = _key.password_key
 

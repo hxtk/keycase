@@ -1,12 +1,12 @@
 """Cross-platform module for reading TPM Platform Control Registers."""
-from typing import Literal, Optional
+from typing import Optional
 
 from keycase.machine import _tpm_pcr_constants as _constants
 
 
 def read_pcr(
-    register: _constants.Register,
-    hash_size: Optional[Literal[1, 256, 384, 512]] = None,
+    register: int,
+    hash_size: Optional[_constants.HashSize] = None,
 ) -> bytes:
     """Read the specified Platform Control Register.
 

@@ -32,7 +32,7 @@ def _get_largest_hash() -> _constants.HashSize:
 
 
 def read_pcr(
-    register: _constants.Register,
+    register: int,
     hash_size: Optional[_constants.HashSize] = None,
 ) -> bytes:
     """Read the specified Platform Control Register.
@@ -55,7 +55,7 @@ def read_pcr(
             contain the requested hash size.
     """
     if register < 0 or register > 23:
-        raise ValueError(f'Expected PCR in [0, 24); got {register}')
+        raise ValueError(f'Needed PCR in [0, 24); got {register}.')
     if not os.path.exists(_BASE_PATH):
         raise RuntimeError(f'No such path `{_BASE_PATH}`. Do you have a TPM?')
 
