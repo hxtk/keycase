@@ -15,7 +15,7 @@ class TestVault(absltest.TestCase):
     """Unit tests for the _vault.Vault class."""
 
     def test_from_yaml(self):
-        with open('keycase/vault/test_vault.yaml', 'r') as f:
+        with open('keycase/vault/test_vault.yaml', 'r', encoding='utf-8') as f:
             v = _vault.Vault.from_yaml(f)
         self.assertEqual(
             v.user_keys['e9ef5506-3099-4a4d-b73b-e1d16163e2cf'],
