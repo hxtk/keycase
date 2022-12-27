@@ -29,6 +29,7 @@ class Vault(object):
 
     @classmethod
     def from_proto(cls, vault: keys_pb2.Vault) -> 'Vault':
+        """Construct a Vault from a `keys_pb2.Vault."""
         secrets = dict((x.name, x) for x in vault.secrets)
         master_keys = dict((x.name, x) for x in vault.master_keys)
         user_keys = dict((x.name, x) for x in vault.user_keys)
@@ -36,6 +37,18 @@ class Vault(object):
 
     @classmethod
     def from_yaml(cls, stream: TextIO) -> 'Vault':
+        """Parse a vault from a YAML stream.
+
+        The YAML format is the YAML encoding of the canonical JSON format
+        for the underlying `keys_pb2.Vault` protobuf.
+
+        Args:
+            stream: a readable stream containing a YAML representation
+                of a `keys_pb2.Vault`.
+
+        Returns:
+            a Vault corresponding to the serialized object.
+        """
         obj = yaml.safe_load(stream)
 
         vault = keys_pb2.Vault()
@@ -43,6 +56,11 @@ class Vault(object):
         return cls.from_proto(vault)
 
     def dump_proto(self) -> keys_pb2.Vault:
+        """Export the underlying vault.
+
+        Returns:
+            a `keys_pb2.Vault` containing all data from the vault.
+        """
         return keys_pb2.Vault(
             user_keys=self.user_keys.values(),
             master_keys=self.master_keys.values(),
@@ -50,11 +68,20 @@ class Vault(object):
         )
 
     def dump_string(self) -> str:
+        """Dump a YAML representation of the vault to a string."""
         buffer = io.StringIO()
         self.dump_stream(buffer)
         return buffer.read()
 
-    def dump_stream(self, stream: io.StringIO) -> None:
+    def dump_stream(self, stream: TextIO) -> None:
+        """Dump a YAML representation of the vault to a writable stream.
+
+        The YAML format is a YAML representation of the canonical JSON format
+        of the underlying `keys_pb2.Vault`.
+
+        Args:
+            stream: a writable stream.
+        """
         vault = self.dump_proto()
         yaml.dump(json_format.MessageToDict(vault), stream)
 
@@ -65,7 +92,7 @@ class Vault(object):
     ) -> Callable[[str], bytes]:
         for secret_payload in secret.payloads:
             for master_payload in self.master_keys[
-                    secret_payload.key_name].keys:
+                    secret_payload.key_name].payloads:
                 if user_key.name == master_payload.key_name:
                     return _key_chain(
                         keys_pb2.Secret(
@@ -74,7 +101,7 @@ class Vault(object):
                         ),
                         keys_pb2.MasterKey(
                             name=secret_payload.key_name,
-                            keys=[master_payload],
+                            payloads=[master_payload],
                         ),
                         user_key,
                     )
@@ -85,6 +112,20 @@ class Vault(object):
         secret_name: str,
         key_name: str,
     ) -> Callable[[str], bytes]:
+        """Provide password-protected access to a secret using a key.
+
+        Args:
+            secret_name: the canonical name of the secret to retrieve.
+            key_name: the canonical name of the user's decryption key.
+
+        Returns:
+            a function accepting a password as input and returning the
+            plaintext of the token. No protected information is stored
+            in memory until the function is invoked.
+
+            The returned function may raise keycase.crypto.AuthenticationError
+            if the provided password is incorrect.
+        """
         return self._internal_get_token(
             self.secrets[secret_name],
             self.user_keys[key_name],
@@ -149,7 +190,7 @@ def _key_chain(
             secret.payloads[0].ciphertext,
             secret.name,
             EncryptedKey(
-                master_key.keys[0].ciphertext,
+                master_key.payloads[0].ciphertext,
                 master_key.name,
                 UserKey(user_key, password),
             ),

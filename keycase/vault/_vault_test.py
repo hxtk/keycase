@@ -22,7 +22,7 @@ class TestVault(absltest.TestCase):
             keys_pb2.UserKey(
                 name='e9ef5506-3099-4a4d-b73b-e1d16163e2cf',
                 embedded_salt=keys_pb2.SaltKey(salt=base64.decodebytes(
-                    b'355jjlz2e6rOmQNWyZFK27igB1txXRAS7bfbWnZS2S4=',),),
+                    b'355jjlz2e6rOmQNWyZFK27igB1txXRAS7bfbWnZS2S4=')),
             ),
             'Could not retrieve user key.',
         )
@@ -52,18 +52,18 @@ class TestVault(absltest.TestCase):
         vault.user_keys.append(
             keys_pb2.UserKey(
                 name=user_key_name,
-                embedded_salt=keys_pb2.SaltKey(salt=user_salt,),
+                embedded_salt=keys_pb2.SaltKey(salt=user_salt),
             ),)
         vault.master_keys.append(
             keys_pb2.MasterKey(
                 name=master_key_name,
-                keys=[
+                payloads=[
                     keys_pb2.Payload(
                         key_name=user_key_name,
                         ciphertext=encrypted_master_key,
                     ),
                 ],
-            ),)
+            ))
         vault.secrets.append(
             keys_pb2.Secret(
                 name=secret_name,
@@ -73,7 +73,7 @@ class TestVault(absltest.TestCase):
                         ciphertext=encrypted_secret,
                     ),
                 ],
-            ),)
+            ))
         v = _vault.Vault.from_proto(vault)
 
         self.assertEqual(

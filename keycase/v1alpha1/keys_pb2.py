@@ -14,7 +14,7 @@ _sym_db = _symbol_database.Default()
 from google.protobuf import timestamp_pb2 as google_dot_protobuf_dot_timestamp__pb2
 
 
-DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\nkeys.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"P\n\x12Pkcs11EncryptedKey\x12\x12\n\nciphertext\x18\x02 \x01(\x0c\x12\x12\n\npkcs11_uri\x18\x03 \x01(\t\x12\x12\n\npublic_key\x18\x04 \x01(\x0c\"/\n\x07Payload\x12\x10\n\x08key_name\x18\x01 \x01(\t\x12\x12\n\nciphertext\x18\x02 \x01(\x0c\"\x8e\x01\n\nMachineKey\x12\x11\n\x07tpm_pcr\x18\x01 \x01(\x05H\x00\x12\x13\n\tfile_path\x18\x02 \x01(\tH\x00\x12&\n\x07\x63ommand\x18\x03 \x01(\x0b\x32\x13.MachineKey.CommandH\x00\x1a(\n\x07\x43ommand\x12\x0f\n\x07\x63ommand\x18\x01 \x01(\t\x12\x0c\n\x04\x61rgv\x18\x02 \x03(\tB\x06\n\x04kind\"\x17\n\x07SaltKey\x12\x0c\n\x04salt\x18\x01 \x01(\x0c\"\xc3\x01\n\x07UserKey\x12\x0c\n\x04name\x18\x01 \x01(\t\x12!\n\rembedded_salt\x18\x02 \x01(\x0b\x32\x08.SaltKeyH\x00\x12#\n\x0cmachine_salt\x18\x03 \x01(\x0b\x32\x0b.MachineKeyH\x00\x12)\n\npkcs11_key\x18\x04 \x01(\x0b\x32\x13.Pkcs11EncryptedKeyH\x00\x12/\n\x0b\x63reate_time\x18\x05 \x01(\x0b\x32\x1a.google.protobuf.TimestampB\x06\n\x04kind\"1\n\tMasterKey\x12\x0c\n\x04name\x18\x01 \x01(\t\x12\x16\n\x04keys\x18\x02 \x03(\x0b\x32\x08.Payload\"]\n\x06Secret\x12\x0c\n\x04name\x18\x01 \x01(\t\x12\x14\n\x0c\x64isplay_name\x18\x02 \x01(\t\x12\x13\n\x0b\x64\x65scription\x18\x03 \x01(\t\x12\x1a\n\x08payloads\x18\x04 \x03(\x0b\x32\x08.Payload\"_\n\x05Vault\x12\x1b\n\tuser_keys\x18\x02 \x03(\x0b\x32\x08.UserKey\x12\x1f\n\x0bmaster_keys\x18\x03 \x03(\x0b\x32\n.MasterKey\x12\x18\n\x07secrets\x18\x04 \x03(\x0b\x32\x07.Secretb\x06proto3')
+DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\nkeys.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"P\n\x12Pkcs11EncryptedKey\x12\x12\n\nciphertext\x18\x02 \x01(\x0c\x12\x12\n\npkcs11_uri\x18\x03 \x01(\t\x12\x12\n\npublic_key\x18\x04 \x01(\x0c\"\x98\x03\n\x16\x41symmetricEncryptedKey\x12\x12\n\nciphertext\x18\x01 \x01(\x0c\x12\x1e\n\npublic_key\x18\x02 \x01(\x0b\x32\x08.CommandH\x00\x12@\n\x0fpublic_commands\x18\x03 \x01(\x0b\x32%.AsymmetricEncryptedKey.PublicCommandH\x00\x12\x19\n\x0fpublic_key_file\x18\x04 \x01(\tH\x00\x12\x1a\n\x10public_key_bytes\x18\x05 \x01(\x0cH\x00\x12\x1f\n\x0bprivate_key\x18\x06 \x01(\x0b\x32\x08.CommandH\x01\x12\x42\n\x10private_commands\x18\x07 \x01(\x0b\x32&.AsymmetricEncryptedKey.PrivateCommandH\x01\x1a*\n\rPublicCommand\x12\x19\n\x07\x65ncrypt\x18\x01 \x01(\x0b\x32\x08.Command\x1a+\n\x0ePrivateCommand\x12\x19\n\x07\x64\x65\x63rypt\x18\x01 \x01(\x0b\x32\x08.CommandB\x08\n\x06publicB\t\n\x07private\"/\n\x07Payload\x12\x10\n\x08key_name\x18\x01 \x01(\t\x12\x12\n\nciphertext\x18\x02 \x01(\x0c\"(\n\x07\x43ommand\x12\x0f\n\x07\x63ommand\x18\x01 \x01(\t\x12\x0c\n\x04\x61rgv\x18\x02 \x03(\t\"Y\n\nMachineKey\x12\x11\n\x07tpm_pcr\x18\x01 \x01(\x05H\x00\x12\x13\n\tfile_path\x18\x02 \x01(\tH\x00\x12\x1b\n\x07\x63ommand\x18\x03 \x01(\x0b\x32\x08.CommandH\x00\x42\x06\n\x04kind\"\x17\n\x07SaltKey\x12\x0c\n\x04salt\x18\x01 \x01(\x0c\"\xf6\x01\n\x07UserKey\x12\x0c\n\x04name\x18\x01 \x01(\t\x12/\n\x0b\x63reate_time\x18\x02 \x01(\x0b\x32\x1a.google.protobuf.Timestamp\x12!\n\rembedded_salt\x18\n \x01(\x0b\x32\x08.SaltKeyH\x00\x12#\n\x0cmachine_salt\x18\x0b \x01(\x0b\x32\x0b.MachineKeyH\x00\x12)\n\npkcs11_key\x18\x0c \x01(\x0b\x32\x13.Pkcs11EncryptedKeyH\x00\x12\x31\n\x0e\x61symmetric_key\x18\r \x01(\x0b\x32\x17.AsymmetricEncryptedKeyH\x00\x42\x06\n\x04kind\"k\n\tMasterKey\x12\x0c\n\x04name\x18\x01 \x01(\t\x12\x1a\n\x08payloads\x18\x02 \x03(\x0b\x32\x08.Payload\x12\x34\n\x10\x63reate_timestamp\x18\x03 \x01(\x0b\x32\x1a.google.protobuf.Timestamp\"]\n\x06Secret\x12\x0c\n\x04name\x18\x01 \x01(\t\x12\x14\n\x0c\x64isplay_name\x18\x02 \x01(\t\x12\x13\n\x0b\x64\x65scription\x18\x03 \x01(\t\x12\x1a\n\x08payloads\x18\x04 \x03(\x0b\x32\x08.Payload\"t\n\x05Vault\x12\x1b\n\tuser_keys\x18\x02 \x03(\x0b\x32\x08.UserKey\x12\x1f\n\x0bmaster_keys\x18\x03 \x03(\x0b\x32\n.MasterKey\x12\x18\n\x07secrets\x18\x04 \x03(\x0b\x32\x07.Secret\x12\x13\n\x0b\x64\x65\x66\x61ult_key\x18\x01 \x01(\tb\x06proto3')
 
 _builder.BuildMessageAndEnumDescriptors(DESCRIPTOR, globals())
 _builder.BuildTopDescriptorsAndMessages(DESCRIPTOR, 'keys_pb2', globals())
@@ -23,20 +23,26 @@ if _descriptor._USE_C_DESCRIPTORS == False:
   DESCRIPTOR._options = None
   _PKCS11ENCRYPTEDKEY._serialized_start=47
   _PKCS11ENCRYPTEDKEY._serialized_end=127
-  _PAYLOAD._serialized_start=129
-  _PAYLOAD._serialized_end=176
-  _MACHINEKEY._serialized_start=179
-  _MACHINEKEY._serialized_end=321
-  _MACHINEKEY_COMMAND._serialized_start=273
-  _MACHINEKEY_COMMAND._serialized_end=313
-  _SALTKEY._serialized_start=323
-  _SALTKEY._serialized_end=346
-  _USERKEY._serialized_start=349
-  _USERKEY._serialized_end=544
-  _MASTERKEY._serialized_start=546
-  _MASTERKEY._serialized_end=595
-  _SECRET._serialized_start=597
-  _SECRET._serialized_end=690
-  _VAULT._serialized_start=692
-  _VAULT._serialized_end=787
+  _ASYMMETRICENCRYPTEDKEY._serialized_start=130
+  _ASYMMETRICENCRYPTEDKEY._serialized_end=538
+  _ASYMMETRICENCRYPTEDKEY_PUBLICCOMMAND._serialized_start=430
+  _ASYMMETRICENCRYPTEDKEY_PUBLICCOMMAND._serialized_end=472
+  _ASYMMETRICENCRYPTEDKEY_PRIVATECOMMAND._serialized_start=474
+  _ASYMMETRICENCRYPTEDKEY_PRIVATECOMMAND._serialized_end=517
+  _PAYLOAD._serialized_start=540
+  _PAYLOAD._serialized_end=587
+  _COMMAND._serialized_start=589
+  _COMMAND._serialized_end=629
+  _MACHINEKEY._serialized_start=631
+  _MACHINEKEY._serialized_end=720
+  _SALTKEY._serialized_start=722
+  _SALTKEY._serialized_end=745
+  _USERKEY._serialized_start=748
+  _USERKEY._serialized_end=994
+  _MASTERKEY._serialized_start=996
+  _MASTERKEY._serialized_end=1103
+  _SECRET._serialized_start=1105
+  _SECRET._serialized_end=1198
+  _VAULT._serialized_start=1200
+  _VAULT._serialized_end=1316
 # @@protoc_insertion_point(module_scope)

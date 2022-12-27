@@ -9,6 +9,52 @@ message Pkcs11EncryptedKey {
   bytes public_key = 4;
 }
 
+// AsymmetricEncryptedKey is a key encrypted asymmetrically.
+//
+// Currently only RSA keys are supported.
+message AsymmetricEncryptedKey {
+
+  message PublicCommand {
+    // Encrypt is a command that encrypts its standard input stream.
+    // The ciphertext must be written to its standard output stream.
+    Command encrypt = 1;
+  }
+
+  message PrivateCommand {
+    // Decrypt is a command that decrypts its standard input stream.
+    // The plaintext must be written to its standard output stream.
+    Command decrypt = 1;
+
+    // Whether or not the output is padded
+    bool padded = 2;
+  }
+
+  // CipherText is the signed, encrypted key value.
+  bytes ciphertext = 1;
+
+  oneof public {
+    // PublicKey is a command that outputs a PEM-encoded RSA Public Key.
+    Command public_key = 2;
+
+    // PublicCommands is a command set for public key operations.
+    PublicCommand public_commands = 3;
+
+    // PublicKeyFile is a path to a PEM-encoded RSA Public Key file.
+    string public_key_file = 4;
+
+    // PublicKeyBytes is the literal bytes of a PEM-encoded RSA Public Key.
+    bytes public_key_bytes = 5;
+  }
+
+  oneof private {
+    // PrivateKey is a command that outputs a PEM-encoded RSA Private Key.
+    Command private_key = 6;
+
+    // PrivateCommands is a command set for private key operations.
+    PrivateCommand private_commands = 7;
+  }
+}
+
 // A literal piece of encrypted data and the list of keys that may decrypt it.
 message Payload {
   // KeyName is the canonical name of the key for which this payload was encrypted.
@@ -18,17 +64,20 @@ message Payload {
   bytes ciphertext = 2;
 }
 
+message Command {
+  // The binary to be executed.
+  string command = 1;
+
+  // Arguments to be passed to the binary.
+  repeated string argv = 2;
+
+  // Environment variables passed to the process.
+  map<string, string> envs = 3;
+}
+
 // A password-derived key salted with some measured property of the host
 // machine.
 message MachineKey {
-  message Command {
-    // The binary to be executed.
-    string command = 1;
-
-    // Arguments to be passed to the binary.
-    repeated string argv = 2;
-  }
-
   oneof kind {
     // The  largest available hash for the specified Platform Control Register
     // shall be used as the key derivation salt.
@@ -44,29 +93,55 @@ message MachineKey {
   }
 }
 
+// SaltKey represents a password-derived key whose salt is stored in the Vault.
 message SaltKey {
+  // Salt is a string of at least 16 random bytes.
   bytes salt = 1;
 }
 
 message UserKey {
+  // Name is the unique canonical identifier of this UserKey.
+  //
+  // This is used to identify the key in MasterKey payloads.
   string name = 1;
+  google.protobuf.Timestamp create_time = 2;
   oneof kind {
     // A salt for password-based key derivation embedded in the vault file.
-    SaltKey embedded_salt = 2;
+    SaltKey embedded_salt = 10;
 
     // A salt for password-based key derivation derived from the host machine.
-    MachineKey machine_salt = 3;
+    MachineKey machine_salt = 11;
 
     // A key that is encrypted for an RSA private key identified by a PKCS#11 URI.
-    Pkcs11EncryptedKey pkcs11_key = 4;
-  }
+    Pkcs11EncryptedKey pkcs11_key = 12;
 
-  google.protobuf.Timestamp create_time = 5;
+    // A key that is encrypted for an asymmetric encryption key.
+    AsymmetricEncryptedKey asymmetric_key = 13;
+  }
 }
 
+// MasterKey represents a key used directly to encrypt Secrets.
+//
+// These keys are stored in the vault in encrypted form, associated
+// to their name.
 message MasterKey {
+  // Name is the canonical unique identifier of this MasterKey.
+  //
+  // The name of the key is used as associated data to authenticate its
+  // encryption, as well as to identify the key capable of decrypting a
+  // particular payload.
   string name = 1;
-  repeated Payload keys = 2;
+
+  // Keys lists the payloads of this MasterKey.
+  //
+  // Each Payload is a ciphertext of the key material that has been encrypted
+  // for a particular UserKey.
+  repeated Payload payloads = 2;
+
+  // CreateTimestamp identifies the time at which this MasterKey was created.
+  //
+  // This timestamp is used for expiration and rotation information.
+  google.protobuf.Timestamp create_timestamp = 3;
 }
 
 // Secret represents a TOTP Secret.
@@ -80,11 +155,20 @@ message Secret {
   // Description is a human-readable long-form description of this Secret.
   string description = 3;
 
+  // The encrypted payload for each Master Key.
   repeated Payload payloads = 4;
 }
 
 message Vault {
+  // Keys the user can directly access.
   repeated UserKey user_keys = 2;
+
+  // Keys that are stored encrypted in the vault.
   repeated MasterKey master_keys = 3;
+
+  // Inner secrets stored in the vault.
   repeated Secret secrets = 4;
+
+  // The default user key if there are multiple.
+  string default_key = 1;
 }
