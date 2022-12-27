@@ -1,6 +1,6 @@
 """OAEP Padding Utilities for RSA cryptography."""
 import math
-import typing
+from typing import Protocol
 from typing import Union
 
 from cryptography.hazmat.primitives import constant_time
@@ -18,7 +18,22 @@ class PaddingError(Exception):
     """Error stripping OAEP padding."""
 
 
-MaskGenerationFunction = typing.Callable[[bytes, int], bytes]
+class MaskGenerationFunction(Protocol):
+    """Type for a Mask Generation Function."""
+
+    def __call__(self, mgf_seed: bytes, mask_len: int) -> bytes:
+        """Mask Generation Function Implementation.
+
+        Args:
+            mgf_seed: a bytes object containing seed data for mask generation.
+            mask_len: the size of the mask to be generated.
+
+        Returns:
+            a deterministic pseudo-random bytes object which SHALL have a length
+            of exactly `mask_len`. Subsequent calls to this function with the
+            same inputs SHALL yield the same output.
+        """
+        raise NotImplementedError('Protocol not implemented.')
 
 
 class MGF1(object):
