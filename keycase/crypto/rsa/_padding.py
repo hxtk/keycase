@@ -3,7 +3,6 @@ import math
 import typing
 from typing import Union
 
-from cryptography.hazmat.primitives.asymmetric import padding
 from cryptography.hazmat.primitives import constant_time
 from cryptography.hazmat.primitives import hashes
 
@@ -13,18 +12,6 @@ def _xor(a: bytes, b: bytes) -> bytes:
         raise ValueError('a and b MUST be `bytes` objects of equal length.')
 
     return bytes(x ^ y for x, y in zip(a, b))
-
-
-def _get_padding(
-        associated_data: Union[str, bytes]) -> padding.AsymmetricPadding:
-    if isinstance(associated_data, str):
-        associated_data = associated_data.encode(encoding='utf-8')
-
-    return padding.OAEP(
-        mgf=padding.MGF1(algorithm=hashes.SHA256()),
-        algorithm=hashes.SHA256(),
-        label=associated_data,
-    )
 
 
 class PaddingError(Exception):
@@ -168,9 +155,6 @@ def strip_padding(
     # Below computes a sum of all error states and ensures that sum is 0 as a
     # constant-time implementation of `none`.
     if sum(1 if x else 0 for x in error_states) != 0:
-        print(error_states)
-        print(db)
-        print(y)
         raise PaddingError('decryption error')
 
     return residual[idx + 1:]
